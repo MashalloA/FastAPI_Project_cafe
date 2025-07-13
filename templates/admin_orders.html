@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Все заказы{% endblock %}
+{% block content %}
+<h2>Все заказы</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Имя клиента</th>
+      <th>Продукт</th>
+      <th>Вкус</th>
+      <th>Объём</th>
+      <th>Цена</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for o in orders %}
+    <tr>
+      <td>{{ o.order_id }}</td>
+      <td>{{ o.customer_name }}</td>
+      <td>{{ o.product }}</td>
+      <td>{{ o.taste }}</td>
+      <td>{{ o.volume }}</td>
+      <td>{{ o.price }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

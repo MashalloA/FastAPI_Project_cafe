@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Сделать заказ{% endblock %}
+{% block content %}
+<section id="order-section">
+  <h2>Оформить заказ</h2>
+  <form id="order-form">
+    <label>Имя:
+      <input type="text" name="customer_name" required>
+    </label>
+    <div id="items-container">
+      <div class="item">
+        <label>Продукт:
+          <select name="product_name">
+            {% for p in products %}<option>{{p}}</option>{% endfor %}
+          </select>
+        </label>
+        <label>Вкус:
+          <select name="taste">
+            {% for t in tastes %}<option>{{t}}</option>{% endfor %}
+          </select>
+        </label>
+        <label>Объём:
+          <select name="volume">
+            {% for v in volumes %}<option>{{v}}</option>{% endfor %}
+          </select>
+        </label>
+      </div>
+    </div>
+    <button type="button" id="add-item">+ Добавить товар</button>
+    <button type="submit">Отправить</button>
+  </form>
+  <div id="response"></div>
+</section>
+
+<script>
+  document.getElementById('add-item').addEventListener('click', () => {
+    const cont = document.getElementById('items-container');
+    cont.appendChild(cont.firstElementChild.cloneNode(true));
+  });
+
+  document.getElementById('order-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const items = Array.from(form.querySelectorAll('.item')).map(div => ({
+      product_name: div.querySelector('[name=product_name]').value,
+      taste: div.querySelector('[name=taste]').value,
+      volume: +div.querySelector('[name=volume]').value
+    }));
+    const data = { customer_name: form.customer_name.value, items };
+    const res = await fetch('/orders/', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    document.getElementById('response').innerText = JSON.stringify(json, null, 2);
+  });
+</script>
+{% endblock %}

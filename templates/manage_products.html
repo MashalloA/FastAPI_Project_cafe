@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Управление продуктами{% endblock %}
+{% block content %}
+<h2>Создать продукт</h2>
+<form id="create-product-form">
+  <textarea name="json_data" placeholder="Вставь JSON ProductCreate" rows="8" cols="60" required></textarea><br>
+  <button type="submit">Создать</button>
+</form>
+
+<hr>
+
+<h2>Добавить вкус к продукту</h2>
+<form id="create-taste-form">
+  <label>Имя продукта:
+    <input type="text" name="product_name" required>
+  </label><br>
+  <textarea name="json_data" placeholder="Вставь JSON TasteCreate" rows="6" cols="60" required></textarea><br>
+  <button type="submit">Добавить вкус</button>
+</form>
+
+<hr>
+
+<h2>Обновить наличие вкуса</h2>
+<form id="update-stock-form">
+  <label>Вкус:
+    <input type="text" name="taste_name" required>
+  </label>
+  <label>В наличии:
+    <select name="in_stock">
+      <option value="true">Да</option>
+      <option value="false">Нет</option>
+    </select>
+  </label>
+  <button type="submit">Обновить</button>
+</form>
+
+<hr>
+
+<h2>Обновить цену</h2>
+<form id="update-price-form">
+  <label>Продукт: <input type="text" name="product" required></label>
+  <label>Вкус: <input type="text" name="taste" required></label>
+  <label>Объём: <input type="number" step="any" name="volume" required></label><br>
+  <textarea name="json_data" placeholder="Вставь JSON с новой ценой и/или объёмом" rows="4" cols="60" required></textarea><br>
+  <button type="submit">Обновить</button>
+</form>
+
+<hr>
+
+<h2>Удалить</h2>
+<form id="delete-form">
+  <label>Продукт: <input type="text" name="product_name" required></label><br>
+  <label>Вкус (опц.): <input type="text" name="taste_name"></label><br>
+  <label>Объём (опц.): <input type="number" step="any" name="volume"></label><br>
+  <button type="submit">Удалить</button>
+</form>
+
+<hr>
+
+<h2>Показать все продукты</h2>
+<button onclick="fetchAllProducts()">Показать все</button>
+<pre id="product-list"></pre>
+
+<script>
+const headers = {"Content-Type": "application/json"};
+
+document.getElementById("create-product-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const json = JSON.parse(e.target.json_data.value);
+  const res = await fetch("/product/create/", {method: "POST", headers, body: JSON.stringify(json)});
+  alert(await res.text());
+});
+
+document.getElementById("create-taste-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = e.target.product_name.value;
+  const json = JSON.parse(e.target.json_data.value);
+  const res = await fetch(`/product/taste/create/?product_name=${name}`, {method: "POST", headers, body: JSON.stringify(json)});
+  alert(await res.text());
+});
+
+document.getElementById("update-stock-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const taste = e.target.taste_name.value;
+  const in_stock = e.target.in_stock.value === "true";
+  const res = await fetch(`/product/taste/${taste}/info`, {
+    method: "PATCH", headers, body: JSON.stringify({ in_stock })
+  });
+  alert(await res.text());
+});
+
+document.getElementById("update-price-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const product = e.target.product.value;
+  const taste = e.target.taste.value;
+  const volume = e.target.volume.value;
+  const json = JSON.parse(e.target.json_data.value);
+  const res = await fetch(`/product/price/${product}/${taste}/${volume}`, {
+    method: "PATCH", headers, body: JSON.stringify(json)
+  });
+  alert(await res.text());
+});
+
+document.getElementById("delete-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const params = new URLSearchParams(new FormData(e.target)).toString();
+  const res = await fetch(`/product/delete/?${params}`, {method: "DELETE"});
+  alert(await res.text());
+});
+
+async function fetchAllProducts() {
+  const res = await fetch("/product/show-all");
+  const data = await res.json();
+  document.getElementById("product-list").textContent = JSON.stringify(data, null, 2);
+}
+</script>
+{% endblock %}

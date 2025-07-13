@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Заказы {{ name }}{% endblock %}
+{% block content %}
+<h2>Заказы клиента: {{ name }}</h2>
+{% if orders %}
+<table>
+  <thead><tr>
+    <th>ID</th><th>Продукт</th><th>Вкус</th><th>Объём</th><th>Цена</th>
+  </tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr>
+      <td>{{o.order_id}}</td>
+      <td>{{o.product}}</td>
+      <td>{{o.taste}}</td>
+      <td>{{o.volume}}</td>
+      <td>{{o.price}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>У клиента нет заказов.</p>
+{% endif %}
+{% endblock %}
