@@ -58,3 +58,12 @@ class InfoStockUpdate(BaseModel):
 class PriceFullUpdate(BaseModel):
     volume: Optional[float] = None
     price: Optional[int] = None
+
+class SingleItem(BaseModel):
+    product_name: str
+    taste: str
+    volume: float
+
+class OrderCreate(BaseModel):
+    customer_name: str
+    items: List[SingleItem]

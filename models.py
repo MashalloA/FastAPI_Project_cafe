@@ -27,7 +27,7 @@ class Info(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     in_stock = Column(Boolean)
-    taste_id = Column(Integer, ForeignKey("tastes.id"))  # ✅ Переименовал для ясности
+    taste_id = Column(Integer, ForeignKey("tastes.id"))
 
     taste = relationship("Taste", back_populates="info")
     prices = relationship("Price", back_populates="info", cascade="all, delete-orphan")
@@ -42,3 +42,12 @@ class Price(Base):
     info_id = Column(Integer, ForeignKey("info.id"))
 
     info = relationship("Info", back_populates="prices")
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True)
+    customer_name = Column(String)
+    product_id = Column(Integer, ForeignKey("products.id"))
+    taste_id = Column(Integer, ForeignKey("tastes.id"))
+    price_id = Column(Integer, ForeignKey("prices.id"))
